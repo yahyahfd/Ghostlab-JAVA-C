@@ -36,6 +36,22 @@ public class Labyrinthe{
 		return ret;
 	}
 
+	public int[] placerJoueur(Joueur j){ //renvoie [x,y] de la position affecté au joueur
+		//Penser a ajouter des attributs posX et posY a Joueur comme pour Fantome
+		Random r = new Random();
+		int[] ret = [-1,-1];
+		while(true){
+				int x = r.nextInt(this.width);
+				int y = r.nextInt(this.hauteur);
+				if(maze[y][x] == null){
+					j.posX = x;
+					j.posY = y;
+					ret = [x,y];
+					break;
+				}
+		}
+	}
+
 	public LinkedList<Fantome> placerFantome(int nbFantome){ //remplit le labyrinthe de fantome et renvoie une liste les enumerant
 		if (nbFantome > (this.nbCaseVide()/2)){ //on met une limite de fantome correspondant a la moitié du nombre de cases vide
 			nbFantome = this.nbCaseVide()/2;
