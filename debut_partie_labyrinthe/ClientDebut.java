@@ -7,18 +7,14 @@ public class ClientDebut{
 
     public static void main(String[] args){                                                                                   
         try{
-            Socket sock = new Socket("nadim", port);
-            BufferedReader br = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-            PrintWriter pw = new PrintWriter(new OutputStreamWriter(sock.getOutputStream()));
-            String messServ = br.readLine();
-            System.out.println(messServ);
-            Scanner outputClient = new Scanner(System.in);
-            String out = outputClient.next();
-            pw.print(out);
-            pw.flush();
-            pw.close();
-            br.close();
-            sock.close();
+            DatagramSocket dso = new DatagramSocket(port);
+            byte[] data= new byte[60];
+            DatagramPacket paquet = new DatagramPacket(data,60);
+            while(true){
+                dso.receive(paquet);
+                String s = new String(paquet.getData(),0,60);
+                System.out.println("Serveur :" + s);
+            }
         }catch(Exception e){
             System.out.println(e);
             e.printStackTrace();

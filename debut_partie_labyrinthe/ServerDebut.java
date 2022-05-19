@@ -8,27 +8,22 @@ public class ServerDebut{
 
     public static void main(String args[]) throws IOException {                                                                         
         try{
-            ServerSocket serv = new ServerSocket(port);
+            DatagramSocket dso = new DatagramSocket();
+            byte[] data;
+            boolean prets = true; //pour test il faudra le rendre adaptable selon la capacité de la partie
             while(true){
-                Socket socket = serv.accept();
-                BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
-                pw.print("En attente de joueurs\n");
-                pw.flush();
-                String rep = br.readLine();
-                switch(rep){
-                    case "START": //A adapter pour s'activer quand tout les clients inscrit ont envoyé START
-                        LinkedList<Fantome> fantomes = lab.placerFantome(3); //par defaut 3 pour l'instant
-                        pw.print("WELCO id_de_la_partie " + lab.getHauteur() + " " + lab.getWidth() + " " + fantomes.size() + "IP_multi_diffusion" + " " + "port_multi_diffusion");
-                        pw.flush();
-                        //ici fonction qui ajoute joueur au labyrinthe
-                        pw.print("POSIT " + "id_joueur" + " " + "joueur.getPosX()" + " " + "joueur.getPosY()");
-                        pw.flush();
-                        break;
+                String s = "";
+                if(!prets){
+                    s = "En attente de joueurs";
+                }else{
+                    LinkedList<Fantome> fantomes = lab.placerFantome(3); //par defaut 3 pour l'instant
+                    s = ("WELCO id_de_la_partie " + lab.getHauteur() + " " + lab.getWidth() + " " + fantomes.size() + " IP_multi_diffusion" + " " + "port_multi_diffusion");
+                    //ici fonction qui ajoute joueur au labyrinthe
+                    s += ("POSIT " + "id_joueur" + " " + "joueur.getPosX()" + " " + "joueur.getPosY()");
                 }
-                br.close();
-                pw.close();
-                socket.close();
+                data = s.getBytes();
+                DatagramPacket paquet = new DatagramPacket(data,data.length);
+                dso.send(paquet);
             }   
         }catch(Exception e){
             System.out.println(e);

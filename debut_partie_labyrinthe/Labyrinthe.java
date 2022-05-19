@@ -54,4 +54,13 @@ public class Labyrinthe{
 		}
 		return fantomes;
 	}
+
+	public boolean fantomePresent(int x, int y, LinkedList<Fantome> fantomes){ //renvoie true si un fantome est present sur la case (x,y)
+		for (Fantome f : fantomes){
+			if(f.getPosX() == x && f.getPosY() == y){
+				return true;
+			}
+		}
+		return false;
+	}
 }
