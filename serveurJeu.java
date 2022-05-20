@@ -12,7 +12,7 @@ public class serveurJeu implements Runnable{
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
         try {
             InputStream in = this.socket.getInputStream();
             OutputStream out = this.socket.getOutputStream();
@@ -20,8 +20,7 @@ public class serveurJeu implements Runnable{
             BufferedReader br=new BufferedReader(new InputStreamReader(in));
             showGames(out, pw);
             Joueur j = null;
-            boolean party_ready = false;
-            int max_player = 3;
+            int max_player = 2;
             boolean ready = false;
             while(ready==false){ // On ne reçoit que des requêtes valides (tests dans le client lors d'envois)
                 byte[] req_input=readBytes(in,5); //requete
@@ -71,13 +70,7 @@ public class serveurJeu implements Runnable{
                     String port = byteToString(port_input);
                     byte[] game_n  = readBytes(in, 1);
                     int game_n_i = game_n[0];
-                    byte[] closing = readBytes(in, 3);
-                    String closing_s = byteToString(closing);
-                    System.out.print(requete);
-                    System.out.print(" "+id+" ");
-                    System.out.print(port+" ");
-                    System.out.print(game_n_i);
-                    System.out.println(closing_s);
+                    readBytes(in, 3);
                     if(j == null ){
                         j = new Joueur(id,port);
                         Partie tmp;
@@ -123,27 +116,29 @@ public class serveurJeu implements Runnable{
                         j.ready = true;
                         ListIterator <Partie> tmpl = l.listIterator();
                         Partie tmp;
-                        boolean party_rd = true;
                         while(tmpl.hasNext()){
                             tmp = tmpl.next();
                             if(tmp.num == j.num_partie){
-                                Joueur test;
-                                ListIterator<Joueur> tmpj = tmp.j.listIterator();
-                                while(tmpj.hasNext()){
-                                    test = tmpj.next();
-                                    if(test.ready == false){
-                                        party_rd = false;
-                                        break;
+                                tmp.ready = true;
+                                if(tmp.j.size() == max_player){
+                                    Joueur test;
+                                    ListIterator<Joueur> tmpj = tmp.j.listIterator();
+                                    while(tmpj.hasNext()){
+                                        test = tmpj.next();
+                                        if(test.ready == false){
+                                            tmp.ready = false;
+                                            break;
+                                        }
                                     }
+                                }else{
+                                    tmp.ready = false;
                                 }
-                                int nb = 2; //nb joueurs à définir plus tard par partie. //add variable partie ready, ici on ne remove rien, on sort juste du while
-                                if(party_rd == true && tmp.j.size() == nb){
-                                    // on commence la partie tmp et on la retire du tableau du serveur
+                                if(tmp.ready){
                                     tmpl.remove();
                                     break;
                                 }
                             }
-                        }
+                        }                        
                     }
                 }else if(requete.equals("UNREG")){
                     readBytes(in, 3);//***
@@ -232,6 +227,11 @@ public class serveurJeu implements Runnable{
                     System.out.print(requete);
                 }
             }
+            
+            while(j != null){
+                //C'est bon, debut_game ici côté serveur
+            }
+
 
             br.close();
             pw.close();
@@ -283,9 +283,9 @@ public class serveurJeu implements Runnable{
     public static void addPartie(Partie p){
         synchronized(l){
             l.add(p);
-            System.out.println(l.size());
         }
     }
+
     public static void main(String [] args){
         if(args.length != 1){
             System.out.println("Port expected here");
