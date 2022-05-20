@@ -6,7 +6,7 @@ public class serveurJeu implements Runnable{
   Socket socket;
   LinkedList<Partie> parties = new LinkedList<Partie>();
   Partie p = new Partie();
-  LinkedList<Fantome> fantomes = p.getLab().placerFantome(4); //4 fantomes pour le test
+  p.fantomes = p.getLab().placerFantome(4); //4 fantomes pour le test
   Joueur test = new Joueur("AZERTYUI","7777"); //Joueur test
 
   public serveurJeu(Socket s){
@@ -67,6 +67,24 @@ public class serveurJeu implements Runnable{
               // DECONNECTION ?
               break;
             case "GLIS?":
+              readBytes(in,3); //etoiles
+              bytes = new byte[]{
+                'G','L','I','S','!',' ',(byte)(p.getPlayers()) ,'*','*','*'     //[GLIS!␣s***]
+              };
+              out.write(bytes);
+              pw.flush();
+              for (Joueur j : p.getJoueurs()) {
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );     //[GPLYR␣id␣x␣y␣p***] s fois
+                outputStream.write("GPLYR ".getBytes());
+                outputStream.write(j.getId()+" ".getBytes());
+                outputStream.write(j.getX()+" ".getBytes());
+                outputStream.write(j.getY()+" ".getBytes());
+                outputStream.write(j.getScore().getBytes());
+                outputStream.write("***".getBytes());
+                bytes = outputStream.toByteArray();
+                out.write(bytes);
+                pw.flush();
+              }
               break;
             case "MALL?":
               break;
@@ -93,7 +111,7 @@ public class serveurJeu implements Runnable{
           while (tmp != 0  || !(l[j.getX()][j.getY()-1] instanceof Mur)) {
             j.setNewPos(j.getX(),j.getY()-1);
             tmp--;
-            for (Fantome f : fantomes) {
+            for (Fantome f : p.fantomes) {
               if(j.getX() == f.getX() && j.getY() == f.getY()) touch = true;
             }
           }
@@ -102,7 +120,7 @@ public class serveurJeu implements Runnable{
           while (tmp != 0  || !(l[j.getX()][j.getY()+1] instanceof Mur)) {
             j.setNewPos(j.getX(),j.getY()+1);
             tmp--;
-            for (Fantome f : fantomes) {
+            for (Fantome f : p.fantomes) {
               if(j.getX() == f.getX() && j.getY() == f.getY()) touch = true;
             }
           }
@@ -111,7 +129,7 @@ public class serveurJeu implements Runnable{
           while (tmp != 0  || !(l[j.getX()-1][j.getY()] instanceof Mur)) {
             j.setNewPos(j.getX()-1,j.getY());
             tmp--;
-            for (Fantome f : fantomes) {
+            for (Fantome f : p.fantomes) {
               if(j.getX() == f.getX() && j.getY() == f.getY()) touch = true;
             }
           }
@@ -120,7 +138,7 @@ public class serveurJeu implements Runnable{
           while (tmp != 0  || !(l[j.getX()+1][j.getY()] instanceof Mur)) {
             j.setNewPos(j.getX()+1,j.getY());
             tmp--;
-            for (Fantome f : fantomes) {
+            for (Fantome f : p.fantomes) {
               if(j.getX() == f.getX() && j.getY() == f.getY()) touch = true;
             }
           }
@@ -133,7 +151,7 @@ public class serveurJeu implements Runnable{
 
     public boolean end_of_Game(int m){
       boolean res = false;
-      if (fantomes.isEmpty() || parties.get(m).getPlayers()==0) {
+      if (p.fantomes.isEmpty() || parties.get(m).getPlayers()==0) {
         res = true;
       }
       return res;

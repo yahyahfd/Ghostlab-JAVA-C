@@ -33,6 +33,10 @@ public class Joueur {
     return this.point;
   }
 
+  public String getId(){
+    return this.id;
+  }
+
   public void setNewPos(int x,int y){
     this.posx = x;
     this.posy = y;

@@ -5,9 +5,11 @@ public class Partie{
     int num;
     LinkedList<Joueur> j;
     Labyrinthe l;
+    LinkedList<Fantome> fantomes;
 
     public Partie(){
       this.l = new Labyrinthe();
+      this.fantomes = new LinkedList<Fantome>();
       this.j = new LinkedList<Joueur>();
       this.num=num_bis;
       num_bis ++;
@@ -25,5 +27,9 @@ public class Partie{
 
     public Labyrinthe getLab(){
       return this.l;
+    }
+
+    public LinkedList<Joueur> getJoueurs(){
+      return this.j;
     }
 }
