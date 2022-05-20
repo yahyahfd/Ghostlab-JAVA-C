@@ -18,7 +18,10 @@ public class ServerDebut{
             OutputStream out = this.socket.getOutputStream();
             PrintWriter pw = new PrintWriter(new OutputStreamWriter(out));
             BufferedReader br=new BufferedReader(new InputStreamReader(in));
-            
+            //socket multicast qui se lie a n'importe quelle port disponible en localhost
+            MulticastSocket multidiff = new MulticastSocket();
+            String messmulti = "Message envoyé par multi-diffusion";
+
             byte[] req_input = readBytes(in,5);
             String requete = byteToString(req_input);
 
@@ -26,6 +29,8 @@ public class ServerDebut{
             if(requete.equals("START")){
                 for(Partie p : l){
                     int nbJPret = 0;
+                    DatagramPacket dp = new DatagramPacket(messmulti.getBytes(),messmulti.length(),InetAddress.getByName(p.ip),p.port);
+                    multidiff.send(dp);
                     for(Joueur joueur : p.j){
                         //Il faudrait ajouter un attribut a partie pour savoir si la partie a commencé ou pas
                         if(joueur.ready){
@@ -37,8 +42,8 @@ public class ServerDebut{
                         p.fantomes = p.labyrinthe.placerFantome(3); //3 fantomes sont placés;
                         //Il fazut egalement mettre un 'Labyrinthe labyrinthe' comme attribut de partie pour que cette section fonctionne
                         //ainsi qu'un attribut 'LinkedList<Fantome> fantomes'
-                        byte[] welco = new byte[]{ //infos pour IP et port manquant
-                            'W','E','L','C','O',' ',(byte)p.num,' ',(byte)p.labyrinthe.getHauteur(),' ',(byte)p.labyrinthe.getWidth(),' ',(byte)p.fantomes.size(),' ',(byte)"IP_multi_diffusion",' ',(byte)"port_multi_diffusion",'*','*','*'
+                        byte[] welco = new byte[]{ //il faut ajouter un ip d'adresse D(multi-diffusion) (entre 224.0.0.0 et 239.255.255.255)et un port egalement comme attribut a partie
+                            'W','E','L','C','O',' ',(byte)p.num,' ',(byte)p.labyrinthe.getHauteur(),' ',(byte)p.labyrinthe.getWidth(),' ',(byte)p.fantomes.size(),' ',(byte)p.ip,' ',(byte)p.port,'*','*','*'
                         };
                         out.write(welco);
                         out.flush();
@@ -53,6 +58,9 @@ public class ServerDebut{
                     } 
                 }
             }
+            in.close();
+            out.close();
+            multidiff.close();
 
 
         } catch (Exception e) {
@@ -82,31 +90,5 @@ public class ServerDebut{
 
   
 
-    public static void main(String args[]) throws IOException {                                                                         
-        try{
-            
-
-            /*DatagramSocket dso = new DatagramSocket();
-            byte[] data;
-            boolean prets = true; //pour test il faudra le rendre adaptable selon la capacité de la partie
-            while(true){
-                String s = "";
-                if(!prets){
-                    s = "En attente de joueurs";
-                }else{
-                    LinkedList<Fantome> fantomes = lab.placerFantome(3); //par defaut 3 pour l'instant
-                    s = ("WELCO id_de_la_partie " + lab.getHauteur() + " " + lab.getWidth() + " " + fantomes.size() + " IP_multi_diffusion" + " " + "port_multi_diffusion");
-                    //ici fonction qui ajoute joueur au labyrinthe
-                    s += ("POSIT " + "id_joueur" + " " + "joueur.getPosX()" + " " + "joueur.getPosY()");
-                }
-                data = s.getBytes();
-                DatagramPacket paquet = new DatagramPacket(data,data.length);
-                dso.send(paquet);*/
-            }   
-        }catch(Exception e){
-            System.out.println(e);
-            e.printStackTrace();
-        }
-                                                                  
-    }     
+    
 }
