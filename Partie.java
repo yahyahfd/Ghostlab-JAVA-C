@@ -4,6 +4,15 @@ public class Partie{
     static int num_bis = 0;
     int num;
     LinkedList<Joueur> j = new LinkedList<Joueur>();
+    boolean ready = false;
+    
+    public void addToPartie(Joueur player){
+        synchronized(j){
+            j.add(player);
+            player.num_partie = num;
+        }
+    }
+
     public Partie(){
         this.num=num_bis;
         num_bis ++;
