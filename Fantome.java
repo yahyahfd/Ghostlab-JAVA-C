@@ -6,4 +6,12 @@ public class Fantome{
 		this.posX = x;
 		this.posY = y;
 	}
+
+	public int getX(){
+		return this.posX;
+	}
+
+	public int getY(){
+		return this.posY;
+	}
 }

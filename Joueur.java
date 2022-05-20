@@ -3,7 +3,7 @@ public class Joueur {
   String port;
   int num_partie = -1; //-1 dans aucune partie
   boolean ready = false;
-  int point;
+  int point,posx,posy;
 
   public Joueur(String i,String p){//on complète l'id par des #, si trop long on coupe, normalment le nom est de taille 8 dès le départ
       String new_id = i;
@@ -17,10 +17,33 @@ public class Joueur {
       }
       this.port=p;
       this.point = 0;
+      this.posx = 1; //A modifier en placant les joueurs au début de la partie
+      this.posy = 1;
   }
 
-  public static void reinitialize_Score(){
+  public void reinitialize_Score(){
     this.point = 0;
+  }
+
+  public void incrScore(int s){
+    this.point+=s;
+  }
+
+  public int getScore(){
+    return this.point;
+  }
+
+  public void setNewPos(int x,int y){
+    this.posx = x;
+    this.posy = y;
+  }
+
+  public int getX(){
+    return this.posx;
+  }
+
+  public int getY(){
+    return this.posy;
   }
 
 }

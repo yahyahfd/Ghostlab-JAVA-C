@@ -24,6 +24,10 @@ public class Labyrinthe{
 		return this.width;
 	}
 
+	public Case[][] getMaze(){
+		return this.maze;
+	}
+
 	public int nbCaseVide(){
 		int ret = 0;
 		for(int i = 0; i<this.maze.length;i++){
