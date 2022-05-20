@@ -1,6 +1,8 @@
 public class Joueur {
     String id;
     String port;
+    int posX;
+    int posY;
     int num_partie = -1; //-1 dans aucune partie
     boolean ready = false;
 
@@ -15,5 +17,7 @@ public class Joueur {
             this.id = new_id;
         }
         this.port=p;
+        this.posX = -1;
+        this.posY = -1;
     }
 }
