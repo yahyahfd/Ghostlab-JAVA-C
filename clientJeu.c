@@ -84,9 +84,19 @@ int main(int argc, char *argv[]) {
     }
     struct sockaddr_in adress_sock;
     adress_sock.sin_family = AF_INET;
-    adress_sock.sin_port = htons(atoi(argv[1])); //PORT
-    inet_aton(argv[2],&adress_sock.sin_addr); //IP
+    int port_rd = atoi(argv[1]);
+    if(port_rd==0){
+        exit(EXIT_FAILURE);
+    }
+    adress_sock.sin_port = htons(port_rd); //PORT
+    int ip_rd = inet_aton(argv[2],&adress_sock.sin_addr); //IP
+    if(ip_rd==0){
+        exit(EXIT_FAILURE);
+    }
     int descr=socket(PF_INET,SOCK_STREAM,0);
+    if(descr == -1){
+        exit(EXIT_FAILURE);
+    }
     int r=connect(descr,(struct sockaddr *)&adress_sock,sizeof(struct sockaddr_in));
     if(r!=-1){
         char buff[100];
@@ -326,6 +336,8 @@ int main(int argc, char *argv[]) {
         }
         
         close(descr);
+        return EXIT_SUCCESS;
+    }else{
+        return EXIT_FAILURE;
     }
-    return EXIT_SUCCESS;
 }
