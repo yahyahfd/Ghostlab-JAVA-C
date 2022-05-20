@@ -4,8 +4,7 @@ import java.net.*;
 
 public class ServerDebut{
     Socket socket;  
-    LinkedList<Partie> l = new LinkedList<Partie>();
-    public static Labyrinthe lab= new Labyrinthe(); //temporaire dans le switch case il faudra recuperer le labyrinthe de la partie courante
+    static LinkedList<Partie> l = new LinkedList<Partie>();
 
     public serveurJeu(Socket s){
         this.socket = s;
