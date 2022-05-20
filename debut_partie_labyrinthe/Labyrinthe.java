@@ -50,6 +50,7 @@ public class Labyrinthe{
 					break;
 				}
 		}
+		return ret;
 	}
 
 	public LinkedList<Fantome> placerFantome(int nbFantome){ //remplit le labyrinthe de fantome et renvoie une liste les enumerant
