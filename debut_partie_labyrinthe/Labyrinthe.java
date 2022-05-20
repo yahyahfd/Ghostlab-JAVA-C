@@ -1,4 +1,5 @@
 import java.util.*;
+import java.io.*;
 
 public class Labyrinthe{
 	private int hauteur;
@@ -38,18 +39,37 @@ public class Labyrinthe{
 
 	public int[] placerJoueur(Joueur j){ //renvoie [x,y] de la position affecté au joueur
 		//Penser a ajouter des attributs posX et posY a Joueur comme pour Fantome
-		Random r = new Random();
-		int[] ret = [-1,-1];
+		/*Random r = new Random();
+		int[] ret = {-1,-1};
 		while(true){
 				int x = r.nextInt(this.width);
 				int y = r.nextInt(this.hauteur);
 				if(maze[y][x] == null){
 					j.posX = x;
 					j.posY = y;
-					ret = [x,y];
+					ret[0]= x;
+					ret[1]= y;
 					break;
 				}
 		}
+		return ret;*/
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int x = 0;
+		int y = 0;
+		do{
+			try{
+				System.out.println("Enter this Player posX:");
+				x = Integer.parseInt(br.readLine());
+				System.out.println("Enter this Player posY:");
+				y = Integer.parseInt(br.readLine());
+			}catch(IOException e){
+				System.out.println(e);
+				e.printStackTrace();
+			}
+		}while(x >= this.width || y >= this.hauteur || x < 0 || y < 0);
+		int[] ret = new int[2];
+		ret[0] = x;
+		ret[1] = y;
 		return ret;
 	}
 

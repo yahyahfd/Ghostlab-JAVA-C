@@ -49,7 +49,7 @@ public class ServerDebut{
                         for(Joueur joueur : p.j){
                             int[] posJ = p.labyrinthe.placerJoueur(joueur);
                             byte[] posit = new byte[]{
-                                'P','O','S','I','T',' ',(byte)joueur.id,' ',(byte)posJ[0],' ',(byte)posJ[1],'*','*','*'
+                                'P','O','S','I','T',' ',(byte)joueur.id,' ',(byte)posJ[1],' ',(byte)posJ[0],'*','*','*'
                             };
                             out.write(posit);
                             out.flush();
