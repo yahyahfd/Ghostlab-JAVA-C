@@ -1,7 +1,5 @@
 import java.net.*;
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.ListIterator;
 import java.io.*;
 
@@ -35,8 +33,7 @@ public class serveurJeu implements Runnable{
                     byte[] port_input=readBytes(in,4);
                     String id = byteToString(id_input);
                     String port = byteToString(port_input);
-                    byte[] closing = readBytes(in, 3); //***
-                    String closing_s = byteToString(closing);//
+                    readBytes(in, 3); //***
                     if(j == null ){
                         j = new Joueur(id,port);
                         Partie tmp = new Partie();
@@ -118,8 +115,7 @@ public class serveurJeu implements Runnable{
                         System.out.println("Vous avez déjà rejoint une partie");
                     }
                 }else if(requete.equals("START")){
-                    byte[] closing = readBytes(in, 3);
-                    String closing_s = byteToString(closing);
+                    readBytes(in, 3);//***
                     if(j==null){
                         System.out.println("Rejoignez d'abord une partie");
                     }else{
@@ -150,8 +146,7 @@ public class serveurJeu implements Runnable{
                         }
                     }
                 }else if(requete.equals("UNREG")){
-                    byte[] closing = readBytes(in, 3);
-                    String closing_s = byteToString(closing);//
+                    readBytes(in, 3);//***
                     byte[] tosend;
                     if(j == null){
                         System.out.println("Vous n'êtes dans aucune partie.");
@@ -165,13 +160,19 @@ public class serveurJeu implements Runnable{
                             tmp = tmpl.next();
                             if(tmp.num == j.num_partie){
                                 tmp.j.remove(j);
+                                break;
+                            }else{
+                                tmp = null;
                             }
                         }
                         if(tmp!=null){
-                            j.num_partie = -1;
+                            j = null;
                             tosend = new byte[]{
                                 'U','N','R','O','K',' ',(byte)tmp.num,'*','*','*'
                             };
+                            if(tmp.j.size() == 0){
+                                l.remove(tmp);
+                            }
                         }else{
                             System.out.println("La partie spécifiée n'existe pas.");
                             tosend = new byte[]{
@@ -184,32 +185,54 @@ public class serveurJeu implements Runnable{
                 }else if(requete.equals("SIZE?")){//SIZE? m***
                     
                 }else if(requete.equals("LIST?")){ //LIST? m***
-                    //LIST! m s***
-                    //s * PLAYR id*** 
-                    //sinon DUNNO*** si m n'existe pas
+                    readBytes(in,1);//space
+                    byte[] game_n  = readBytes(in, 1);
+                    int game_n_i = game_n[0];
+                    readBytes(in, 3);//***
+                    ListIterator <Partie> tmpl = l.listIterator();
+                    Partie tmp = null;
+                    byte[] tosend;
+                    while(tmpl.hasNext()){
+                        tmp = tmpl.next();
+                        if(tmp.num == game_n_i){
+                            //LIST! m s***
+                            tosend = new byte[]{
+                                'L','I','S','T','!',' ',(byte)tmp.num,' ',(byte)tmp.j.size(),'*','*','*'
+                            };
+                            out.write(tosend);
+                            pw.flush();
+                            //s * PLAYR id*** 
+                            int s = tmp.j.size();
+                            for(int i = 0;i<s;i++){
+                                String id = tmp.j.get(i).id;
+                                ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
+                                outputStream.write("PLAYR ".getBytes());
+                                outputStream.write(id.getBytes());
+                                outputStream.write("***".getBytes());
+                                tosend = outputStream.toByteArray();
+                                out.write(tosend);
+                                pw.flush();
+                            }
+                            break;
+                        }else{
+                            tmp = null;
+                        }
+                    }
+                    if(tmp == null){//DUNNO***
+                        tosend = new byte[]{
+                            'D','U','N','N','O','*','*','*'
+                        };
+                        out.write(tosend);
+                        pw.flush();
+                    }
                 }else if(requete.equals("GAME?")){ //GAME?***
-                    byte[] closing = readBytes(in, 3);//***
+                    readBytes(in, 3);//***
                     showGames(out, pw);
                 }else{//Nous ne tombons jamais dans ce cas.
                     System.out.print(requete);
                 }
             }
-            
-            
-            // Joueur tmp = new Joueur(id, port); //Le joueur créé lié à ce client
-            // System.out.println(id);                    
-            // System.out.println(port); 
-            // System.out.println(requete);
-            // if(requete.equals("REGIS")){
-            //     byte[] game_input= readBytes(in, 3);
-            //     String game = byteToString(game_input);
-            //     System.out.println(game);
-            //     if(tmp.num_partie!=-1){//erreur deja dans une partie
 
-            //     }else{
-            //         tmp.num_partie = Integer.parseInt(game);
-            //     }
-            // }
             br.close();
             pw.close();
             socket.close();
@@ -273,14 +296,6 @@ public class serveurJeu implements Runnable{
                     Socket socket=server.accept();
                     serveurJeu j = new serveurJeu(socket);
 
-                    // Joueur j1 = new Joueur("AZERTYUI", "4000");
-                    // Partie p = new Partie();
-                    // p.j.add(j1);
-                    // j1.num_partie=p.num; //on check si -1 avant tout changement
-                    // j.l.add(p);
-                    //add Joueur to Partie synchro
-                    //add partie to l synchro on l
-                    
                     Thread t = new Thread(j);
                     t.start();
                 }

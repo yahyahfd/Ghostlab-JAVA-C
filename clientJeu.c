@@ -67,6 +67,34 @@ int isAlphaNum(char * buf, int nb){
     return 0;
 }
 
+void showGames(int descr, char* buff){
+    int size_rec = recv(descr,buff,6*sizeof(char),0);//GAMES space
+    buff[size_rec] = '\0';
+    printf("%s",buff);
+    size_rec = recv(descr,buff,sizeof(char),0);//n
+    buff[size_rec] ='\0';
+    uint8_t n_games = (uint8_t) buff[0];// we store n here
+    printf("%d",n_games);
+    size_rec = recv(descr,buff,sizeof(char)*3,0);//***
+    buff[size_rec]='\0';
+    printf("%s\n",buff);
+    for(int i=0;i<n_games;i++){
+        size_rec = recv(descr,buff,6*sizeof(char),0);
+        buff[size_rec] ='\0';
+        printf("%s",buff);//OGAME space
+        size_rec = recv(descr,buff,sizeof(char),0);
+        buff[size_rec] ='\0';
+        uint8_t m = (uint8_t) buff[0]; //num game
+        printf("%d",m);
+        size_rec = recv(descr,buff,2*sizeof(char),0);
+        buff[size_rec] ='\0';
+        uint8_t s = (uint8_t) buff[1]; //num players
+        printf(" %d ",s);
+        size_rec = recv(descr,buff,3*sizeof(char),0);
+        buff[size_rec] ='\0';
+        printf("%s\n",buff);//***
+    }
+}
 int main(int argc, char *argv[]) {
     if(argc < 3){
         printf("Port et IP attendus ici\n");
@@ -80,33 +108,8 @@ int main(int argc, char *argv[]) {
     int r=connect(descr,(struct sockaddr *)&adress_sock,sizeof(struct sockaddr_in));
     if(r!=-1){
         char buff[100];
-        int size_rec = recv(descr,buff,6*sizeof(char),0);
-        buff[size_rec] = '\0';
-        printf("%s",buff);
-        size_rec = recv(descr,buff,sizeof(char),0);
-        buff[size_rec] ='\0';
-        uint8_t x = (uint8_t) buff[0];
-        printf("%d",x);
-        size_rec = recv(descr,buff,sizeof(char)*3,0);
-        buff[size_rec]='\0';
-        printf("%s\n",buff);
-        for(int i=0;i<x;i++){
-            size_rec = recv(descr,buff,6*sizeof(char),0);
-            buff[size_rec] ='\0';
-            printf("%s",buff);//OGAME space
-            size_rec = recv(descr,buff,sizeof(char),0);
-            buff[size_rec] ='\0';
-            uint8_t m = (uint8_t) buff[0]; //num game
-            printf("%d",m);
-            size_rec = recv(descr,buff,2*sizeof(char),0);
-            buff[size_rec] ='\0';
-            uint8_t s = (uint8_t) buff[1]; //num players
-            printf(" %d ",s);
-            size_rec = recv(descr,buff,3*sizeof(char),0);
-            buff[size_rec] ='\0';
-            printf("%s\n",buff);//***
-        }
-
+        showGames(descr,buff);
+        int size_rec = 0;
         int rdy = -1;
         int player_created = -1;
         while(rdy == -1){
@@ -214,53 +217,79 @@ int main(int argc, char *argv[]) {
                 }else if(strcmp(requete,"UNREG")==0 && nb == 8){
                     send(descr,buff,nb,0);
                     size_rec = recv(descr,buff,5*sizeof(char),0);
-                        buff[size_rec] = '\0';
-                        printf("%s",buff);
-                        // printf("%d",(uint8_t)buff[6]);
-                        if(strcmp(buff, "UNROK") == 0){
-                            size_rec = recv(descr,buff,sizeof(char),0);//space
-                            size_rec = recv(descr,buff,sizeof(char),0);//gameid
-                            buff[size_rec] ='\0';
-                            uint8_t m = (uint8_t) buff[0]; //num game
-                            printf(" %d",m);
-                            player_created = -1;
-                        }
-                        size_rec = recv(descr,buff,4*sizeof(char),0);
-                        buff[size_rec] ='\0';
-                        printf("%s\n",buff);//***
-                }else if(strcmp(requete,"SIZE?")==0 && nb == 10){
-                    
-                }else if(strcmp(requete,"LIST?")==0 && nb == 10){
-                    
-                }else if(strcmp(requete,"GAME?")==0 && nb == 8){
-                    send(descr,buff,nb,0);
-                    
-                    size_rec = recv(descr,buff,6*sizeof(char),0);//GAMES space
                     buff[size_rec] = '\0';
                     printf("%s",buff);
-                    size_rec = recv(descr,buff,sizeof(char),0);//n
-                    buff[size_rec] ='\0';
-                    uint8_t n_games = (uint8_t) buff[0];// we store n here
-                    printf("%d",n_games);
-                    size_rec = recv(descr,buff,sizeof(char)*3,0);//***
-                    buff[size_rec]='\0';
-                    printf("%s\n",buff);
-                    for(int i=0;i<n_games;i++){
-                        size_rec = recv(descr,buff,6*sizeof(char),0);
-                        buff[size_rec] ='\0';
-                        printf("%s",buff);//OGAME space
-                        size_rec = recv(descr,buff,sizeof(char),0);
+                    // printf("%d",(uint8_t)buff[6]);
+                    if(strcmp(buff, "UNROK") == 0){
+                        size_rec = recv(descr,buff,sizeof(char),0);//space
+                        size_rec = recv(descr,buff,sizeof(char),0);//gameid
                         buff[size_rec] ='\0';
                         uint8_t m = (uint8_t) buff[0]; //num game
-                        printf("%d",m);
-                        size_rec = recv(descr,buff,2*sizeof(char),0);
-                        buff[size_rec] ='\0';
-                        uint8_t s = (uint8_t) buff[1]; //num players
-                        printf(" %d ",s);
-                        size_rec = recv(descr,buff,3*sizeof(char),0);
-                        buff[size_rec] ='\0';
-                        printf("%s\n",buff);//***
+                        printf(" %d",m);
+                        player_created = -1;
                     }
+                    size_rec = recv(descr,buff,4*sizeof(char),0);
+                    buff[size_rec] ='\0';
+                    printf("%s\n",buff);//***
+                }else if(strcmp(requete,"SIZE?")==0 && nb == 10){
+                    
+                }else if(strcmp(requete,"LIST?")==0 && (nb>=10 && nb<= 12)){//LIST? m***
+                    char game[nb-8];
+                    memcpy(game,&buff[6],nb-9);
+                    game[nb-9]='\0';
+                    int game_n;
+                    int game_valid = -1;
+                    if(isNumber(game,nb-9)==1){
+                        game_n = atoi(game);
+                        printf("game_n:%d\n",game_n);//
+                        if(game_n>=0 && game_n<=255){
+                            game_valid = 0;
+                        }
+                    }
+                    if(game_valid == 0){
+                        unsigned char *result= malloc(6); //req + space
+                        memcpy(result,requete,5);
+                        memcpy(result+5," ",1);
+                        result[6] ='\0';
+                        //we send this first
+                        send(descr,result,6,0);
+
+                        //game number
+                        uint8_t game_uint = game_n;
+                        result[0] = game_uint;
+                        result[1] = '\0';
+                        send(descr,result,1,0);
+                        //***
+                        memcpy(result, "***",3);
+                        result[3] ='\0';
+                        send(descr,result,3,0);
+                    }
+                    size_rec = recv(descr,buff,5*sizeof(char),0);
+                    buff[size_rec] = '\0';
+                    printf("%s",buff);//LIST! OR DUNNO
+                    if(strcmp(buff,"LIST!") == 0){
+                        size_rec = recv(descr,buff,4*sizeof(char),0);//space m space s
+                        buff[size_rec] = '\0';
+                        uint8_t m = (uint8_t) buff[1];
+                        uint8_t s = (uint8_t) buff[3];
+                        printf(" %d %d",m,s);
+                        size_rec = recv(descr,buff,3*sizeof(char),0);//***
+                        buff[size_rec] = '\0';
+                        printf("%s\n",buff);
+                        
+                        for(int i = 0;i<s;i++){//s* PLAYR id***
+                            size_rec = recv(descr,buff,17*sizeof(char),0);
+                            buff[size_rec] = '\0';
+                            printf("%s\n",buff);
+                        }
+                    }else{
+                        size_rec = recv(descr,buff,3*sizeof(char),0);//***
+                        buff[size_rec] = '\0';
+                        printf("%s\n",buff);
+                    }
+                }else if(strcmp(requete,"GAME?")==0 && nb == 8){
+                    send(descr,buff,nb,0);
+                    showGames(descr,buff);                    
                 }else{
                     printf("Requête non reconnue: le format doit-être respecté entièrement\n");
                 }
