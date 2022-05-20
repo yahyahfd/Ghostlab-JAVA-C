@@ -12,7 +12,7 @@ public class serveurJeu implements Runnable{
     }
 
     @Override
-    public synchronized void run() {
+    public void run() {
         try {
             InputStream in = this.socket.getInputStream();
             OutputStream out = this.socket.getOutputStream();
