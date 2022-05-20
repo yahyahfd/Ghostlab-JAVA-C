@@ -206,8 +206,54 @@ int main(int argc, char *argv[]) {
                     size_rec = recv(descr,buff,4*sizeof(char),0);
                     buff[size_rec] ='\0';
                     printf("%s\n",buff);//***
-                }else if(strcmp(requete,"SIZE?")==0 && nb == 10){
-                    
+                }else if(strcmp(requete,"SIZE?")==0 && (nb>=10 && nb<= 12)){
+                    char game[nb-8];
+                    memcpy(game,&buff[6],nb-9);
+                    game[nb-9]='\0';
+                    int game_n;
+                    int game_valid = -1;
+                    if(isNumber(game,nb-9)==1){
+                        game_n = atoi(game);
+                        if(game_n>=0 && game_n<=255){
+                            game_valid = 0;
+                        }
+                    }
+                    if(game_valid == 0){
+                        unsigned char *result= malloc(6); //req + space
+                        memcpy(result,requete,5);
+                        memcpy(result+5," ",1);
+                        result[6] ='\0';
+                        //we send this first
+                        send(descr,result,6,0);
+
+                        //game number
+                        uint8_t game_uint = game_n;
+                        result[0] = game_uint;
+                        result[1] = '\0';
+                        send(descr,result,1,0);
+                        //***
+                        memcpy(result, "***",3);
+                        result[3] ='\0';
+                        send(descr,result,3,0);
+                    }
+                    size_rec = recv(descr,buff,5*sizeof(char),0);
+                    buff[size_rec] = '\0';
+                    printf("%s",buff);//SIZE! OR DUNNO
+                    if(strcmp(buff,"SIZE!") == 0){
+                        size_rec = recv(descr,buff,6*sizeof(char),0);//space m space h space w
+                        buff[size_rec] = '\0';
+                        uint8_t m = (uint8_t) buff[1];
+                        uint8_t h = (uint8_t) buff[3];
+                        uint8_t w = (uint8_t) buff[5];
+                        printf(" %d %d %d",m,h,w);
+                        size_rec = recv(descr,buff,3*sizeof(char),0);//***
+                        buff[size_rec] = '\0';
+                        printf("%s\n",buff);
+                    }else{
+                        size_rec = recv(descr,buff,3*sizeof(char),0);//***
+                        buff[size_rec] = '\0';
+                        printf("%s\n",buff);
+                    }
                 }else if(strcmp(requete,"LIST?")==0 && (nb>=10 && nb<= 12)){//LIST? m***
                     char game[nb-8];
                     memcpy(game,&buff[6],nb-9);

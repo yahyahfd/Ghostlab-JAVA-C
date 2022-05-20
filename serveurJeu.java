@@ -178,7 +178,36 @@ public class serveurJeu implements Runnable{
                     out.write(tosend);
                     pw.flush();
                 }else if(requete.equals("SIZE?")){//SIZE? m***
-                    
+                    readBytes(in,1);//space
+                    byte[] game_n  = readBytes(in, 1);
+                    int game_n_i = game_n[0];
+                    readBytes(in, 3);//***
+                    ListIterator <Partie> tmpl = l.listIterator();
+                    Partie tmp = null;
+                    byte[] tosend;
+                    while(tmpl.hasNext()){
+                        tmp = tmpl.next();
+                        if(tmp.num == game_n_i){
+                            //SIZE! m h w***
+                            int h = tmp.labyrinthe.getHauteur();
+                            int w = tmp.labyrinthe.getWidth();
+                            tosend = new byte[]{
+                                'S','I','Z','E','!',' ',(byte)tmp.num,' ',(byte)h,' ',(byte)w,'*','*','*'
+                            };
+                            out.write(tosend);
+                            pw.flush();
+                            break;
+                        }else{
+                            tmp = null;
+                        }
+                    }
+                    if(tmp == null){//DUNNO***
+                        tosend = new byte[]{
+                            'D','U','N','N','O','*','*','*'
+                        };
+                        out.write(tosend);
+                        pw.flush();
+                    }
                 }else if(requete.equals("LIST?")){ //LIST? m***
                     readBytes(in,1);//space
                     byte[] game_n  = readBytes(in, 1);
