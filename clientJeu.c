@@ -353,13 +353,13 @@ int main(int argc, char *argv[]) {
             buff[size_rec] = '\0';
             printf("%s", buff);
 
-            size_rec = recv(descr,buff,4*sizeof(char),0); // x space y
+            size_rec = recv(descr,buff,3*sizeof(char),0); // x space y
             buff[size_rec] = '\0';
             uint8_t x = (uint8_t) buff[0];
             uint8_t y = (uint8_t) buff[2];
             printf("%d %d",x,y);
 
-            size_rec = recv(descr,buff,4*sizeof(char),0); //***
+            size_rec = recv(descr,buff,3*sizeof(char),0); //***
             buff[size_rec] = '\0';
             printf("%s\n", buff);
         }
