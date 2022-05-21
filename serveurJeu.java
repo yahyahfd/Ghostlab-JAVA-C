@@ -113,6 +113,33 @@ public class serveurJeu implements Runnable{
                         System.out.println("Rejoignez d'abord une partie");
                     }else{
                         j.ready = true;
+                        ready = true;
+                        j.ready = true;
+                        ListIterator <Partie> tmpl = l.listIterator();
+                        Partie tmp;
+                        while(tmpl.hasNext()){
+                            tmp = tmpl.next();
+                            if(tmp.num == j.num_partie){
+                                tmp.ready = true;
+                                if(tmp.j.size() == max_player){
+                                    Joueur test;
+                                    ListIterator<Joueur> tmpj = tmp.j.listIterator();
+                                    while(tmpj.hasNext()){
+                                        test = tmpj.next();
+                                        if(test.ready == false){
+                                            tmp.ready = false;
+                                            break;
+                                        }
+                                    }
+                                }else{
+                                    tmp.ready = false;
+                                }
+                                if(tmp.ready){
+                                    tmpl.remove();
+                                    break;
+                                }
+                            }
+                        } 
                         for(Partie p : l){
                             int nbJPret = 0;                            
                             while(p.ready == false){
@@ -154,36 +181,8 @@ public class serveurJeu implements Runnable{
                                 }  
                                 nbJPret = 0;
                             }
-                        }
-                    } 
-                        /*ready = true;
-                        j.ready = true;
-                        ListIterator <Partie> tmpl = l.listIterator();
-                        Partie tmp;
-                        while(tmpl.hasNext()){
-                            tmp = tmpl.next();
-                            if(tmp.num == j.num_partie){
-                                tmp.ready = true;
-                                if(tmp.j.size() == max_player){
-                                    Joueur test;
-                                    ListIterator<Joueur> tmpj = tmp.j.listIterator();
-                                    while(tmpj.hasNext()){
-                                        test = tmpj.next();
-                                        if(test.ready == false){
-                                            tmp.ready = false;
-                                            break;
-                                        }
-                                    }
-                                }else{
-                                    tmp.ready = false;
-                                }
-                                if(tmp.ready){
-                                    tmpl.remove();
-                                    break;
-                                }
-                            }
-                        }  */                      
-                    
+                        }                     
+                    }
                 }else if(requete.equals("UNREG")){
                     readBytes(in, 3);//***
                     byte[] tosend;
