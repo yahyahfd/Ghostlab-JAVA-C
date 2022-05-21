@@ -112,7 +112,51 @@ public class serveurJeu implements Runnable{
                     if(j==null){
                         System.out.println("Rejoignez d'abord une partie");
                     }else{
-                        ready = true;
+                        j.ready = true;
+                        for(Partie p : l){
+                            int nbJPret = 0;                            
+                            while(p.ready == false){
+                                for(Joueur joueur : p.j){
+                                    
+                                    if(joueur.ready){
+                                        nbJPret ++;
+                                    }
+                                }
+
+                                if(nbJPret == p.j.size()){ // si tout les joueurs de p sont pret
+                                    p.ready = true;
+                                    p.fantomes = p.labyrinthe.placerFantome(3); //3 fantomes sont placés;
+                                    byte[] welco = new byte[]{ //il faut ajouter un ip d'adresse D(multi-diffusion) (entre 224.0.0.0 et 239.255.255.255)et un port egalement comme attribut a partie
+                                        'W','E','L','C','O',' ',(byte)p.num,' ',(byte)p.labyrinthe.getHauteur(),' ',(byte)p.labyrinthe.getWidth(),' ',(byte)p.fantomes.size()/*, ' ' ,(byte)p.ip, ' ' ,(byte)p.port*/,'*','*','*'
+                                    };
+                                    out.write(welco);
+                                    pw.flush();
+                                   
+                                    for(Joueur joueur : p.j){
+                                        int[] posJ = p.labyrinthe.placerJoueur(joueur);
+                                        byte[] posit = new byte[]{
+                                            'P','O','S','I','T',' '};
+                                        ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
+                                        byte[] jid = joueur.id.getBytes();
+                                        bos1.write(posit);
+                                        bos1.write(jid);
+                                        byte[] positjid = bos1.toByteArray();
+                                        byte[] p3= new byte[]{' ',(byte)posJ[1],' ',(byte)posJ[0],'*','*','*'};
+                                        bos1.close();
+                                        ByteArrayOutputStream bos2 = new ByteArrayOutputStream();
+                                        bos2.write(positjid);
+                                        bos2.write(p3);
+                                        byte[] positFinal = bos2.toByteArray();
+                                        bos2.close();
+                                        out.write(positFinal);
+                                        pw.flush();
+                                    }
+                                }  
+                                nbJPret = 0;
+                            }
+                        }
+                    } 
+                        /*ready = true;
                         j.ready = true;
                         ListIterator <Partie> tmpl = l.listIterator();
                         Partie tmp;
@@ -138,8 +182,8 @@ public class serveurJeu implements Runnable{
                                     break;
                                 }
                             }
-                        }                        
-                    }
+                        }  */                      
+                    
                 }else if(requete.equals("UNREG")){
                     readBytes(in, 3);//***
                     byte[] tosend;
@@ -257,9 +301,9 @@ public class serveurJeu implements Runnable{
                 }
             }
             
-            while(j != null){
+           /* while(j != null){
                 //C'est bon, debut_game ici côté serveur
-            }
+            }*/
 
 
             br.close();
