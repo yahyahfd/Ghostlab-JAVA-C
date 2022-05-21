@@ -3,6 +3,7 @@ public class Joueur {
     String port;
     int posX;
     int posY;
+    int point;
     int num_partie = -1; //-1 dans aucune partie
     boolean ready = false;
 
@@ -19,5 +20,27 @@ public class Joueur {
         this.port=p;
         this.posX = -1;
         this.posY = -1;
+        this.point = 0;
+    }
+
+    public int getScore(){
+      return this.point;
+    }
+
+    public String getId(){
+      return this.id;
+    }
+
+    public void setNewPos(int x,int y){
+      this.posX = x;
+      this.posY = y;
+    }
+
+    public int getX(){
+      return this.posX;
+    }
+
+    public int getY(){
+      return this.posY;
     }
 }

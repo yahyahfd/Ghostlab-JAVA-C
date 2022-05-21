@@ -4,7 +4,7 @@ import java.util.ListIterator;
 import java.io.*;
 
 public class serveurJeu implements Runnable{
-    Socket socket;  
+    Socket socket;
     static LinkedList<Partie> l = new LinkedList<Partie>();
 
     public serveurJeu(Socket s){
@@ -51,7 +51,7 @@ public class serveurJeu implements Runnable{
                             out.write(tosend);
                             pw.flush();
                             System.out.println("Vous avez déjà rejoint une partie");
-                        }                      
+                        }
                     }else{
                         byte[] tosend = new byte[]{
                             'R','E','G','N','O','*','*','*'
@@ -139,12 +139,12 @@ public class serveurJeu implements Runnable{
                                     break;
                                 }
                             }
-                        } 
+                        }
                         for(Partie p : l){
-                            int nbJPret = 0;                            
+                            int nbJPret = 0;
                             while(p.ready == false){
                                 for(Joueur joueur : p.j){
-                                    
+
                                     if(joueur.ready){
                                         nbJPret ++;
                                     }
@@ -158,7 +158,7 @@ public class serveurJeu implements Runnable{
                                     };
                                     out.write(welco);
                                     pw.flush();
-                                   
+
                                     for(Joueur joueur : p.j){
                                         int[] posJ = p.labyrinthe.placerJoueur(joueur);
                                         byte[] posit = new byte[]{
@@ -178,10 +178,10 @@ public class serveurJeu implements Runnable{
                                         out.write(positFinal);
                                         pw.flush();
                                     }
-                                }  
+                                }
                                 nbJPret = 0;
                             }
-                        }                     
+                        }
                     }
                 }else if(requete.equals("UNREG")){
                     readBytes(in, 3);//***
@@ -268,7 +268,7 @@ public class serveurJeu implements Runnable{
                             };
                             out.write(tosend);
                             pw.flush();
-                            //s * PLAYR id*** 
+                            //s * PLAYR id***
                             int s = tmp.j.size();
                             for(int i = 0;i<s;i++){
                                 String id = tmp.j.get(i).id;
@@ -299,10 +299,83 @@ public class serveurJeu implements Runnable{
                     System.out.print(requete);
                 }
             }
-            
-           /* while(j != null){
-                //C'est bon, debut_game ici côté serveur
-            }*/
+
+            // boolean iquit_req = false;
+            // while(j != null && !end_of_Game(tmp,iquit_req)){
+            //   byte[] req_input=readBytes(in,5);//requete
+            //   String requete = byteToString(req_input);
+            //   byte[] bytes;
+            //
+            //   switch(requete){
+            //     case "UPMOV":
+            //
+            //     case "DOMOV":
+            //
+            //     case "LEMOV":
+            //
+            //     case "RIMOV":
+            //       byte[] byteScore,byteX,byteY; //point et coord du joueur
+            //       readBytes(in,1);//space
+            //       byte[] d_input=readBytes(in,3); //distance
+            //       int distance = Integer.parseInt(byteToString(d_input));;
+            //       readBytes(in,3); //etoiles
+            //       boolean touchGhost = movebis(tmp.getLab(),j,distance,requete);   //deplacmement du joueur en recuperant le boolean indiquant si il a croisé un fantome
+            //       byteX = intToByte(j.getX(),3);
+            //       byteY = intToByte(j.getY(),3);
+            //       if (touchGhost) {
+            //         byteScore = intToByte(j.getScore(),4); //convertion du score en bytes
+            //         bytes = new byte[]{
+            //         'M','O','V','E','F',' ',byteX[2],byteX[1],byteX[0],' ',byteY[2],byteY[1],byteY[0],' ',byteScore[3],byteScore[2],byteScore[1],byteScore[0],'*','*','*'//[MOVEF␣x␣y␣p***]
+            //         };
+            //         System.out.println("Ghost touched!");
+            //       }else{
+            //         bytes = new byte[]{
+            //         'M','O','V','E','!',' ',byteX[2],byteX[1],byteX[0],' ',byteY[2],byteY[1],byteY[0],'*','*','*'   // [MOVE!␣x␣y***]
+            //         };
+            //         System.out.println("Moved!");
+            //       }
+            //       out.write(bytes);
+            //       pw.flush();
+            //       break;
+            //     case "IQUIT":
+            //       readBytes(in,3); //etoiles
+            //       bytes = new byte[]{
+            //         'G','O','B','Y','E','*','*','*'
+            //       };
+            //       out.write(bytes);
+            //       pw.flush();
+            //       iquit_req = true;
+            //       tmp.j.remove(j);
+            //       // DECONNECTION
+            //       break;
+            //     case "GLIS?":
+            //       readBytes(in,3); //etoiles
+            //       bytes = new byte[]{
+            //         'G','L','I','S','!',' ',(byte)(tmp.getPlayers()) ,'*','*','*'     //[GLIS!␣s***]
+            //       };
+            //       out.write(bytes);
+            //       pw.flush();
+            //       for (Joueur j : tmp.getJoueurs()) {
+            //         ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );     //[GPLYR␣id␣x␣y␣p***] s fois
+            //         outputStream.write("GPLYR ".getBytes());
+            //         outputStream.write((j.getId()+" ").getBytes());
+            //         outputStream.write((j.getX()+" ").getBytes());
+            //         outputStream.write((j.getY()+" ").getBytes());
+            //         outputStream.write(String.valueOf(j.getScore()).getBytes());
+            //         outputStream.write("***".getBytes());
+            //         bytes = outputStream.toByteArray();
+            //         out.write(bytes);
+            //         pw.flush();
+            //       }
+            //       break;
+            //     case "MALL?":
+            //       System.out.println("Not coded yet");
+            //       break;
+            //     case "SEND?":
+            //       System.out.println("Not coded yet");
+            //       break;
+            //   }
+            // }
 
 
             br.close();
@@ -312,7 +385,7 @@ public class serveurJeu implements Runnable{
             System.out.println(e);
             e.printStackTrace();
         }
-        
+
     }
 
     public static String byteToString(byte[] b){
@@ -356,6 +429,85 @@ public class serveurJeu implements Runnable{
         synchronized(l){
             l.add(p);
         }
+    }
+
+    public boolean movebis(Labyrinthe maze,Joueur j,int distance, String direction,Partie p){
+      Case[][] l = maze.maze;
+
+      System.out.println("debut move, distance : "+distance+" coordonnées : "+j.getX()+" "+j.getY());
+      boolean touch = false;
+      switch (direction) {
+        case "UPMOV":
+          System.out.println("distance : "+ distance);
+          for (int i=0;i<distance ;i++ ) {
+            if (!(l[j.getX()-1][j.getY()] instanceof Mur) && inBounds(j.getX()-1,j.getY(),maze)) {
+              j.setNewPos(j.getX()-1,j.getY());
+              System.out.println("nouvelle pos : "+ j.getX()+" "+j.getY());
+            }
+            for (Fantome f : p.fantomes) {
+              if(j.getX() == f.getPosX() && j.getY() == f.getPosY()) touch = true;
+            }
+          }
+          break;
+        case "DOMOV":
+          System.out.println("distance : "+ distance);
+          for (int i=0;i<distance ;i++ ) {
+            if (!(l[j.getX()+1][j.getY()] instanceof Mur) && inBounds(j.getX()+1,j.getY(),maze)) {
+              j.setNewPos(j.getX()+1,j.getY());
+              System.out.println("nouvelle pos : "+ j.getX()+" "+j.getY());
+            }
+            for (Fantome f :p.fantomes) {
+              if(j.getX() == f.getPosX() && j.getY() == f.getPosY()) touch = true;
+            }
+          }
+          break;
+        case "LEMOV":
+          System.out.println("distance : "+ distance);
+          for (int i=0;i<distance ;i++ ) {
+            if (!(l[j.getX()][j.getY()-1] instanceof Mur) && inBounds(j.getX(),j.getY()-1,maze)) {
+              j.setNewPos(j.getX(),j.getY()-1);
+              System.out.println("nouvelle pos : "+ j.getX()+" "+j.getY());
+            }
+            for (Fantome f : p.fantomes) {
+              if(j.getX() == f.getPosX() && j.getY() == f.getPosY()) touch = true;
+            }
+          }
+          break;
+        case "RIMOV":
+          System.out.println("distance : "+ distance);
+          for (int i=0;i<distance ;i++ ) {
+            if (!(l[j.getX()][j.getY()+1] instanceof Mur) && inBounds(j.getX(),j.getY()+1,maze)) {
+              j.setNewPos(j.getX(),j.getY()+1);
+              System.out.println("nouvelle pos : "+ j.getX()+" "+j.getY());
+            }
+            for (Fantome f : p.fantomes) {
+              if(j.getX() == f.getPosX() && j.getY() == f.getPosY()) touch = true;
+            }
+          }
+          break;
+      }
+      j.point =+ 10 ;  //+10 points (à changer)
+      return touch;  //boolean indiquant si fantome croisé
+    }
+
+    public boolean end_of_Game(Partie p,boolean deco){
+      boolean res = false;
+      if ((p.getFantomes().isEmpty() || p.getPlayers()==0) || deco) {
+        res = true;
+      }
+      return res ;
+    }
+
+    public static byte[] intToByte(int myint,int nbOfBytes){
+      byte[] bytes = new byte[nbOfBytes];
+      for (int i = nbOfBytes-1; i >= 0; i--) {
+        bytes[i] = (byte)(myint >>> (i * 8));
+      }
+      return bytes;
+    }
+
+    public boolean inBounds(int x, int y,Labyrinthe l){
+      return ((x >= 0) && (x < l.getHauteur()) && (y >= 0) && (y < l.getWidth())) ;
     }
 
     public static void main(String [] args){
