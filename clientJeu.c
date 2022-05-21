@@ -329,6 +329,40 @@ int main(int argc, char *argv[]) {
             }
         }
 
+        //Apres while(rdy== -1) en assumant que rdy = 1
+        size_rec = recv(descr,buff,5*sizeof(char),0); //Welco
+        buff[size_rec] = '\0';
+        printf("%s", buff);
+        if(strcmp(buff,"WELCO") == 0){
+            size_rec = recv(descr,buff,10*sizeof(char),0); //space m space h space w space f space
+            buff[size_rec] = '\0';
+            uint8_t m = (uint8_t) buff[1];
+            uint8_t h = (uint8_t) buff[3];
+            uint8_t w = (uint8_t) buff[5];
+            uint8_t f = (uint8_t) buff[7];
+            printf(" %d %d %d %d",m,h,w,f);
+            size_rec = recv(descr,buff,20*sizeof(char),0); //IP space port * * *
+            buff[size_rec] = '\0';
+            printf(" %s\n",buff);
+        }
+        size_rec = recv(descr,buff,5*sizeof(char),0);
+        buff[size_rec] = '\0';
+        printf("%s",buff); //POSIT
+        if(strcmp(buff,"POSIT") == 0){
+            size_rec = recv(descr,buff,10*sizeof(char),0);// space id space
+            buff[size_rec] = '\0';
+            printf("%s", buff);
+
+            size_rec = recv(descr,buff,4*sizeof(char),0); // x space y
+            buff[size_rec] = '\0';
+            uint8_t x = (uint8_t) buff[0];
+            uint8_t y = (uint8_t) buff[2];
+            printf("%d %d",x,y);
+
+            size_rec = recv(descr,buff,4*sizeof(char),0); //***
+            buff[size_rec] = '\0';
+            printf("%s\n", buff);
+        }
         
 
         while(player_created != -1){
