@@ -1,4 +1,4 @@
-# PR6_HOH
+# Jeu de labyrinthe
 
 Dans un terminal, premier terminal compiler le serveur via la commande "javac serveurJeu.java", puis lancer le serveur via la commande 
 "java serveurJeu <port au choix>".
